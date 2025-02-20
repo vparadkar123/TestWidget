@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:widget="http://www.netvibes.com/ns/">
+
+<head>
+	<title>Vinay Widget Get Data</title>
+
+	<meta name="author" content="DSIS" />
+	<meta name="description" content="DSIS Sample Widget WAFData for Automatically Fetching Service URL" />
+	<meta name="apiVersion" content="1.0" />
+	<meta name="debugMode" content="true" />
+	<meta name="strictMode" content="false" />
+
+	<!-- Application Preferences -->
+	<widget:preferences>
+		<widget:preference type="text" name="ctx" label="3DSpace Context" defaultValue='' />
+		<widget:preference type="list" name="typeObj" label="Type" defaultValue='Task' >
+			<widget:option label="Task" value='Task' />
+		</widget:preference>
+	</widget:preferences>
+
+	<!-- Widget files -->
+	<link rel="stylesheet" type="text/css" href="./styles/Main.css" />
+	<script type="text/javascript" src="./scripts/Main.js"></script>
+
+	<script type="text/javascript">
+		function widgetLoading() {
+			if (widget) {
+				executeWidgetCode();
+			} else {
+				console.warn("Defered widget Loading");
+				setTimeout(widgetLoading, 100); //Wait for widget object to be added correctly
+			}
+		}
+		widgetLoading();
+	</script>
+
+</head>
+
+<body>
+	<p>Loading...</p>
+</body>
+
+</html>
