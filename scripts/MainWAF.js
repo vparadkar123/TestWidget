@@ -39,12 +39,11 @@ function executeWidgetCode() {
                 };
                 var headerWAF = {
                    		   SecurityContext: widget.getValue("ctx")
-				   cookie: "JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025"
-				   token: "P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM"
-				   libraryId: "a"
+				   
                 };
                 var methodWAF = "GET";
-                WAFData.authenticatedRequest(urlWAF, {
+                WAFData.authenticatedRequest(urlWAF+'?cookie="JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025";
+				   token="P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM";libraryId="a"', {
 					method: methodWAF,
 					headers: headerWAF,
 					data: dataWAF,
