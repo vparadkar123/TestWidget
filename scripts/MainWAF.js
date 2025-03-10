@@ -38,10 +38,10 @@ function executeWidgetCode() {
                    selects: "attribute[*],current,name,revision"
                 };
                 var headerWAF = {
-                   SecurityContext: widget.getValue("ctx");
-				   cookie: "JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025";
-				   token: "P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM";
-				   libraryId: "a";
+                   		   SecurityContext: widget.getValue("ctx")
+				   cookie: "JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025"
+				   token: "P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM"
+				   libraryId: "a"
                 };
                 var methodWAF = "GET";
                 WAFData.authenticatedRequest(urlWAF, {
