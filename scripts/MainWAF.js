@@ -42,8 +42,8 @@ function executeWidgetCode() {
 				   
                 };
                 var methodWAF = "GET";
-                WAFData.authenticatedRequest(urlWAF+'?cookie="JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025";
-				   token="P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM";libraryId="a"', {
+		urlWAF= urlWAF+'?cookie="JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025";token="P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM";libraryId="a"'
+                WAFData.authenticatedRequest(urlWAF, {
 					method: methodWAF,
 					headers: headerWAF,
 					data: dataWAF,
