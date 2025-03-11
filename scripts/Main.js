@@ -45,7 +45,7 @@ function executeWidgetCode() {
                    SecurityContext: "VPLMProjectAdministrator.Company Name.CIMPA DE"
                 };
                 var methodWAF = "GET";
-                WAFData.authenticatedRequest("https://r1132103242220-eu1-compass.3dexperience.3ds.com/enovia/resources/v1/application/CSRF", {
+                WAFData.authenticatedRequest("https://r1132103242220-eu1-space.3dexperience.3ds.com/enovia/resources/v1/application/CSRF", {
 					method: methodWAF,
 					headers: headerWAF,
 					onComplete: function(dataResp) {
