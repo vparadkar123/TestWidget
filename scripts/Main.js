@@ -38,7 +38,8 @@ function executeWidgetCode() {
            callData: function() {
 				i3DXCompassServices.getServiceUrl({
 				    serviceName: '3DSpace', 
-				    platformId: widget.getValue('x3dPlatformId'),
+				    platformId: 'r1132103242220',
+				//widget.getValue('x3dPlatformId'),
 				    onComplete : function (URLResult){
 						myWidget.tableData(URLResult);
 					},
