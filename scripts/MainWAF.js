@@ -43,7 +43,8 @@ function executeWidgetCode() {
                 };
                 var methodWAF = "GET";
 		urlWAF= urlWAF+'?cookie="JSESSIONID=2DFD573DAD45221D54E6E4D2F3E60AAB; SERVERID=MT_Metadata_1_7025";token="P7LH-7PDS-CIDA-C92Q-HGNW-P011-O583-SMXM";libraryId="a"'
-                WAFData.authenticatedRequest(urlWAF, {
+                console.log(urlWAF);
+		    WAFData.authenticatedRequest(urlWAF, {
 					method: methodWAF,
 					headers: headerWAF,
 					data: dataWAF,
@@ -63,6 +64,8 @@ function executeWidgetCode() {
 						widget.body.innerHTML += "<p>" + JSON.stringify(error) + "</p>";
 					}
                 });
+		                    console.log('After auth');
+
             }
         };
 
