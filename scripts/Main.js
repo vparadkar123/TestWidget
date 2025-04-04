@@ -35,28 +35,18 @@ function executeWidgetCode() {
                 myWidget.displayData(myWidget.dataFull);
             },
 
-           callData: function() {
-                var urlWAF = widget.getValue("urlREST");
-                var dataWAF = {
-                   type: widget.getValue("typeObj"),
-                   selects: "attribute[*],current,name,revision"
-                };
-                var headerWAF = {
-                   SecurityContext: "VPLMProjectAdministrator.Company Name.CIMPA DE"
-                };
-                var methodWAF = "GET";
-                WAFData.authenticatedRequest("https://r1132103242220-eu1-space.3dexperience.3ds.com/enovia/resources/v1/application/CSRF", {
-					method: methodWAF,
-					headers: headerWAF,
-					onComplete: function(dataResp) {
-							console.log(dataResp);
-                    			},
-					onFailure: function(error) {
-						widget.body.innerHTML += "<p>Call Faillure</p>";
-						widget.body.innerHTML += "<p>" + JSON.stringify(error) + "</p>";
+            callData: function() {
+				i3DXCompassServices.getServiceUrl({
+				    serviceName: '3DSpace', 
+				    platformId: widget.getValue('x3dPlatformId'),
+				    onComplete : function (URLResult){
+						myWidget.tableData(URLResult);
+					},
+					onFailure : function (error){
+						console.log(error);
 					}
-                });
-            },
+				});				
+			},
 			
 			tableData: function(serviceURL) {
 				var urlWAF = serviceURL + "/resources/v1/modeler/tasks";
@@ -79,7 +69,7 @@ function executeWidgetCode() {
                             myWidget.displayData(myWidget.dataFull);
 					},
 					onFailure: function(error) {
-						widget.body.innerHTML += "<p>Call Failure</p>";
+						widget.body.innerHTML += "<p>Call Faillure</p>";
 						widget.body.innerHTML += "<p>" + JSON.stringify(error) + "</p>";
 					}
                 });
