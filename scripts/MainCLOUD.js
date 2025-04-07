@@ -52,8 +52,8 @@ function executeWidgetCode() {
 				var urlWAF = serviceURL + "/resources/v1/modeler/tasks?tenant=r1132103242220";
 				var dataWAF = {};
                       		  var headerWAF = {
-                        		    SecurityContext: "VPLMProjectLeader.Company Name.CIMPA DE",
-					  ENO_CSRF_TOKEN: "2XJ1-5QYR-VMNG-8JMM-LN1R-YJ7M-447Y-BWT0"
+                        		//   SecurityContext: "VPLMProjectLeader.Company Name.CIMPA DE",
+					//  ENO_CSRF_TOKEN: "2XJ1-5QYR-VMNG-8JMM-LN1R-YJ7M-447Y-BWT0"
                       		  };
                         var methodWAF = "GET";
 				console.log(urlWAF);
