@@ -1,150 +1,148 @@
-function executeWidgetCode(){ 
-require(["DS/WAFData/WAFData","DS/i3DXCompassServices/i3DXCompassServices"],function(WAFData,i3DXCompassServices){ 
-var myWidget={ 
-varServiceURL:"",dataFull:[],title:"",state:"",project:"", 
-displayData:function(arrData){ 
-if(!arrData||arrData.length===0){ 
-widget.body.innerHTML="<p>No tasks found.</p>"; 
-return;}
- 
-var tableHTML="<div style='height:100%;overflow:auto;'>"+
- "<table style='width:100%;border-collapse:collapse;border:1px solid #cccccc;'>"+
- "<thead>"+"<tr>"+"<th style='border:1px solid #cccccc;padding:5px;'>Title</th>"+"<th style='border:1px solid #cccccc;padding:5px;'>State</th>"+"<th style='border:1px solid #cccccc;padding:5px;'>Policy</th>"+"<th style='border:1px solid #cccccc;padding:5px;'>Search</th>"+"</tr>"+"</thead>"+
- "<tbody>"; 
-for(var i=0;i<arrData.length;i++){ 
-tableHTML+="<tr>"+
- "<td style='border:1px solid #cccccc;padding:5px;'>"+
-arrData[i].title+"</td>"+
- "<td style='border:1px solid #cccccc;padding:5px;'>"+
-arrData[i].state+"</td>"+
- "<td style='border:1px solid #cccccc;padding:5px;'>"+
-arrData[i].policy+"</td>"+
- "<td style='border:1px solid #cccccc;padding:5px;'>"+"<button class='searchBtn' data-index='"+i+"'>"+"Search"+"</button>"+"</td>"+
- "</tr>";}
- 
-tableHTML+="</tbody>"+"</table>"+
- "<div id='searchResponse' "+"style='margin-top:10px;padding:10px;border:1px solid #cccccc;background:#f7f7f7;min-height:120px;'>"+"Click Search to get information about the selected title."+"</div>"+
- "</div>"; 
-widget.body.innerHTML=tableHTML; 
-var buttons=widget.body.querySelectorAll(".searchBtn"); 
-buttons.forEach(function(btn){ 
-btn.addEventListener("click",function(){ 
-var index=parseInt(this.getAttribute("data-index"),10); 
-myWidget.searchGoogle(myWidget.dataFull[index]);}); }); }, 
-searchGoogle:function(taskData){
 
-    var responseDiv =
-        widget.body.querySelector("#searchResponse");
+function executeWidgetCode(){
+require(["DS/WAFData/WAFData","DS/i3DXCompassServices/i3DXCompassServices"],function(WAFData,i3DXCompassServices){
 
-    responseDiv.innerHTML =
-        "<b>Preparing Google Search...</b>";
+var myWidget={
 
-    function stripHtml(html){
+GEMINI_API_KEY:"AQ.Ab8RN6JjoWU-3cfhDt0jKiaWS23_o7FDPEUR0S6RORNE9zqvhw",
+dataFull:[],
 
-        if(!html){
-            return "";
-        }
+renderTable:function(arrData){
 
-        var div = document.createElement("div");
-        div.innerHTML = html;
+if(!arrData || arrData.length===0){
+widget.body.innerHTML="<p>No tasks found.</p>";
+return;
+}
 
-        return (
-            div.textContent ||
-            div.innerText ||
-            ""
-        )
-        .replace(/\s+/g," ")
-        .trim();
-    }
+var html="<div style='height:100%;overflow:auto;'>"+
+"<div style='margin-bottom:10px;'>"+
+"<button id='aiGenerateBtn' style='padding:6px 12px;'>AI Generate</button>"+
+"</div>"+
+"<table style='width:100%;border-collapse:collapse;border:1px solid #cccccc;'>"+
+"<thead><tr>"+
+"<th style='border:1px solid #cccccc;padding:5px;'>Select</th>"+
+"<th style='border:1px solid #cccccc;padding:5px;'>Title</th>"+
+"<th style='border:1px solid #cccccc;padding:5px;'>State</th>"+
+"<th style='border:1px solid #cccccc;padding:5px;'>Policy</th>"+
+"</tr></thead><tbody>";
 
-    try{
+for(var i=0;i<arrData.length;i++){
+html += "<tr>"+
+"<td style='border:1px solid #cccccc;padding:5px;text-align:center;'><input type='checkbox' class='taskCheckbox' data-index='"+i+"'></td>"+
+"<td style='border:1px solid #cccccc;padding:5px;'>"+arrData[i].title+"</td>"+
+"<td style='border:1px solid #cccccc;padding:5px;'>"+arrData[i].state+"</td>"+
+"<td style='border:1px solid #cccccc;padding:5px;'>"+arrData[i].policy+"</td>"+
+"</tr>";
+}
 
-        var cleanTitle = stripHtml(taskData.title);
+html += "</tbody></table>"+
+"<div id='searchResponse' style='margin-top:10px;padding:10px;border:1px solid #cccccc;background:#f7f7f7;min-height:150px;'>Select one or more tasks and click AI Generate.</div>"+
+"</div>";
 
-        cleanTitle = cleanTitle
-            .replace(/CA-\d+-\d+/gi, "")
-            .replace(/Approval task to review changes done on/gi, "")
-            .replace(/https?:\/\/\S+/gi, "")
-            .replace(/[^\w\s]/g, " ")
-            .replace(/\s+/g, " ")
-            .trim();
+widget.body.innerHTML = html;
 
-        if(!cleanTitle){
-            cleanTitle = taskData.title;
-        }
+widget.body.querySelector('#aiGenerateBtn').addEventListener('click',function(){
+myWidget.generateAI();
+});
+},
 
-        console.log("Original Title:", taskData.title);
-        console.log("Search Query:", cleanTitle);
+cleanText:function(text){
+var div=document.createElement('div');
+div.innerHTML=text || '';
+return (div.textContent || div.innerText || '')
+.replace(/CA-\d+-\d+/gi,'')
+.replace(/Approval task to review changes done on/gi,'')
+.replace(/[^\w\s]/g,' ')
+.replace(/\s+/g,' ')
+.trim();
+},
 
-        var googleUrl =
-            "https://www.google.com/search?q=" +
-            encodeURIComponent(cleanTitle);
+generateAI:function(){
 
-        console.log("Google URL:", googleUrl);
+var responseDiv=widget.body.querySelector('#searchResponse');
+var checked=widget.body.querySelectorAll('.taskCheckbox:checked');
 
-        responseDiv.innerHTML =
-            "<h3>Google Search</h3>" +
-            "<p><b>Search Term:</b> " +
-            cleanTitle +
-            "</p>" +
-            "<p><a href='" +
-            googleUrl +
-       
-            "Open Google Search Results" +
-            "</a></p>";
+if(!checked || checked.length===0){
+responseDiv.innerHTML='<span style="color:red">Please select at least one task.</span>';
+return;
+}
 
-        window.open(
-            googleUrl,
-            "_blank"
-        );
+var titles=[];
+checked.forEach(function(cb){
+var idx=parseInt(cb.getAttribute('data-index'),10);
+titles.push(myWidget.cleanText(myWidget.dataFull[idx].title));
+});
 
-    }
-    catch(e){
+var prompt='Suggest IP Classification and provide reasoning for the following tasks:\n\n'+titles.join('\n');
 
-        console.error("Google Search Error", e);
+responseDiv.innerHTML='<b>Generating AI response...</b>';
 
-        responseDiv.innerHTML =
-            "<span style='color:red'>" +
-            "Failed to generate Google search." +
-            "</span><br/><pre>" +
-            JSON.stringify(e,null,2) +
-            "</pre>";
-    }
-}, 
-onLoadWidget:function(){ 
-widget.body.innerHTML="<p>Loading Tasks...</p>"; 
-myWidget.callData(); }, 
-callData:function(){ 
-i3DXCompassServices.getServiceUrl({ 
-serviceName:"3DSpace", 
-platformId:widget.getValue("x3dPlatformId"), 
-onComplete:function(URLResult){ 
-myWidget.tableData(URLResult); }, 
-onFailure:function(error){ 
-console.log(error); }}); }, 
-tableData:function(serviceURL){ 
-var urlWAF=serviceURL+"/resources/v1/modeler/tasks"; 
-console.log("Tasks URL:",urlWAF); 
-WAFData.proxifiedRequest(urlWAF,{ 
-proxy:"passport", 
-type:"json", 
-onComplete:function(dataResp){ 
-var tasks=[]; 
-if(dataResp&&dataResp.data){ 
-dataResp.data.forEach(function(element){ 
-tasks.push({ 
-title:element.dataelements.title, 
-state:element.dataelements.state, 
+fetch(
+'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+myWidget.GEMINI_API_KEY,
+{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+contents:[{
+parts:[{text:prompt}]
+}]
+})
+}
+)
+.then(function(resp){return resp.json();})
+.then(function(data){
+var result='No response received';
+if(data && data.candidates && data.candidates.length>0){
+result=data.candidates[0].content.parts[0].text;
+}
+responseDiv.innerHTML='<h3>AI Suggestion</h3><div style="white-space:pre-wrap">'+result+'</div>';
+})
+.catch(function(err){
+responseDiv.innerHTML='<span style="color:red">Gemini API Error</span><br/><pre>'+JSON.stringify(err,null,2)+'</pre>';
+});
+},
+
+onLoadWidget:function(){
+widget.body.innerHTML='<p>Loading Tasks...</p>';
+myWidget.callData();
+},
+
+callData:function(){
+i3DXCompassServices.getServiceUrl({
+serviceName:'3DSpace',
+platformId:widget.getValue('x3dPlatformId'),
+onComplete:function(URLResult){myWidget.tableData(URLResult);},
+onFailure:function(error){console.log(error);}
+});
+},
+
+tableData:function(serviceURL){
+var urlWAF=serviceURL+'/resources/v1/modeler/tasks';
+WAFData.proxifiedRequest(urlWAF,{
+proxy:'passport',
+type:'json',
+onComplete:function(dataResp){
+var tasks=[];
+if(dataResp && dataResp.data){
+dataResp.data.forEach(function(element){
+tasks.push({
+title:element.dataelements.title,
+state:element.dataelements.state,
 policy:element.dataelements.policy
- }); }); }
- 
-myWidget.dataFull=tasks; 
-console.log("dataFull",myWidget.dataFull); 
-myWidget.displayData(myWidget.dataFull); }, 
-onFailure:function(error){ 
-widget.body.innerHTML="<p>Call Failure</p>"+"<pre>"+
-JSON.stringify(error,null,2)+"</pre>"; }
- }); }
- }; 
-widget.addEvent("onLoad",myWidget.onLoadWidget); 
-widget.addEvent("onRefresh",myWidget.onLoadWidget); }); }
+});
+});
+}
+myWidget.dataFull=tasks;
+myWidget.renderTable(tasks);
+},
+onFailure:function(error){
+widget.body.innerHTML='<p>Call Failure</p><pre>'+JSON.stringify(error,null,2)+'</pre>';
+}
+});
+}
+};
+
+widget.addEvent('onLoad',myWidget.onLoadWidget);
+widget.addEvent('onRefresh',myWidget.onLoadWidget);
+});
+}
