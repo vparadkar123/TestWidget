@@ -1,4 +1,3 @@
-
 function executeWidgetCode() {
  
 require(
@@ -12,62 +11,59 @@ var myWidget = {
  
 varServiceURL: "",
 dataFull: [],
- 
-config: {
- 
-anythingLLMUrl:
-"http://localhost:3001/api/v1/workspace/my-workspace/query",
- 
-apiKey:
-"Y6BYR6K-GDN4PS9-J1TXRXY-AVB1WPX",
- 
-promptTemplate:
-"Provide an IP Classification recommendation for the following title: {{title}}"
- 
-},
- 
-buildPrompt: function (taskData) {
- 
-return this.config.promptTemplate
-.replace(
-"{{title}}",
-taskData.title || ""
-);
-},
+title: "",
+state: "",
+project: "",
  
 displayData: function (arrData) {
  
+if (!arrData || arrData.length === 0) {
+ 
+widget.body.innerHTML =
+"<p>No tasks found.</p>";
+ 
+return;
+}
+ 
 var tableHTML =
 "<div style='height:100%;overflow:auto;'>" +
+ 
 "<table style='width:100%;border-collapse:collapse;border:1px solid #cccccc;'>" +
+ 
 "<thead>" +
 "<tr>" +
-"<th style='border:1px solid #cccccc;padding:4px;'>Title</th>" +
-"<th style='border:1px solid #cccccc;padding:4px;'>State</th>" +
-"<th style='border:1px solid #cccccc;padding:4px;'>Policy</th>" +
-"<th style='border:1px solid #cccccc;padding:4px;'>AI Suggestion</th>" +
+"<th style='border:1px solid #cccccc;padding:5px;'>Title</th>" +
+"<th style='border:1px solid #cccccc;padding:5px;'>State</th>" +
+"<th style='border:1px solid #cccccc;padding:5px;'>Policy</th>" +
+"<th style='border:1px solid #cccccc;padding:5px;'>Search</th>" +
 "</tr>" +
 "</thead>" +
+ 
 "<tbody>";
  
 for (var i = 0; i < arrData.length; i++) {
  
 tableHTML +=
 "<tr>" +
-"<td style='border:1px solid #cccccc;padding:4px;'>" +
+ 
+"<td style='border:1px solid #cccccc;padding:5px;'>" +
 arrData[i].title +
 "</td>" +
-"<td style='border:1px solid #cccccc;padding:4px;'>" +
+ 
+"<td style='border:1px solid #cccccc;padding:5px;'>" +
 arrData[i].state +
 "</td>" +
-"<td style='border:1px solid #cccccc;padding:4px;'>" +
+ 
+"<td style='border:1px solid #cccccc;padding:5px;'>" +
 arrData[i].policy +
 "</td>" +
-"<td style='border:1px solid #cccccc;padding:4px;'>" +
-"<button class='aiBtn' data-index='" + i + "'>" +
-"AI Suggestion" +
+ 
+"<td style='border:1px solid #cccccc;padding:5px;'>" +
+"<button class='searchBtn' data-index='" + i + "'>" +
+"Search" +
 "</button>" +
 "</td>" +
+ 
 "</tr>";
 }
  
@@ -75,9 +71,9 @@ tableHTML +=
 "</tbody>" +
 "</table>" +
  
-"<div id='aiResponse' " +
-"style='margin-top:10px;padding:10px;border:1px solid #cccccc;background:#f5f5f5;'>" +
-"Click 'AI Suggestion' to get recommendation." +
+"<div id='searchResponse' " +
+"style='margin-top:10px;padding:10px;border:1px solid #cccccc;background:#f7f7f7;min-height:120px;'>" +
+"Click Search to get information about the selected title." +
 "</div>" +
  
 "</div>";
@@ -85,7 +81,7 @@ tableHTML +=
 widget.body.innerHTML = tableHTML;
  
 var buttons =
-widget.body.querySelectorAll(".aiBtn");
+widget.body.querySelectorAll(".searchBtn");
  
 buttons.forEach(function (btn) {
  
@@ -93,17 +89,138 @@ btn.addEventListener(
 "click",
 function () {
  
-var idx = parseInt(
+var index = parseInt(
 this.getAttribute("data-index"),
 10
 );
  
-myWidget.getAISuggestion(
-myWidget.dataFull[idx]
+myWidget.searchWikipedia(
+myWidget.dataFull[index]
 );
 }
 );
+ 
 });
+ 
+},
+ 
+searchWikipedia: function (taskData) {
+ 
+var responseDiv =
+widget.body.querySelector(
+"#searchResponse"
+);
+ 
+responseDiv.innerHTML =
+"<b>Searching Wikipedia...</b>";
+ 
+var searchTerm =
+encodeURIComponent(
+taskData.title
+);
+ 
+var wikiUrl =
+"https://en.wikipedia.org/api/rest_v1/page/summary/" +
+searchTerm;
+ 
+console.log(
+"Wikipedia URL:",
+wikiUrl
+);
+ 
+WAFData.proxifiedRequest(
+wikiUrl,
+{
+ 
+type: "json",
+ 
+onComplete: function (
+response
+) {
+ 
+console.log(
+"Wikipedia Response:",
+response
+);
+ 
+var html =
+"<h3>Search Results</h3>";
+ 
+if (
+response &&
+response.title
+) {
+ 
+html +=
+"<p><b>Title:</b> " +
+response.title +
+"</p>";
+}
+ 
+if (
+response &&
+response.extract
+) {
+ 
+html +=
+"<p>" +
+response.extract +
+"</p>";
+ 
+if (
+response.content_urls &&
+response.content_urls.desktop &&
+response.content_urls.desktop.page
+) {
+ 
+html +=
+"<p>" +
+response.content_urls.desktop.page +
+"Open Wikipedia Article</a></p>";
+}
+}
+else {
+ 
+html +=
+"<p>No Wikipedia summary found for:</p>" +
+"<p><b>" +
+taskData.title +
+"</b></p>";
+ 
+html +=
+"<pre style='white-space:pre-wrap'>" +
+JSON.stringify(
+response,
+null,
+2
+) +
+"</pre>";
+}
+ 
+responseDiv.innerHTML = html;
+ 
+},
+ 
+onFailure: function (
+error
+) {
+ 
+console.error(error);
+ 
+responseDiv.innerHTML =
+"<span style='color:red'>" +
+"Search API call failed." +
+"</span><br/><pre>" +
+JSON.stringify(
+error,
+null,
+2
+) +
+"</pre>";
+}
+}
+);
+ 
 },
  
 onLoadWidget: function () {
@@ -112,6 +229,7 @@ widget.body.innerHTML =
 "<p>Loading Tasks...</p>";
  
 myWidget.callData();
+ 
 },
  
 callData: function () {
@@ -132,6 +250,7 @@ URLResult
 myWidget.tableData(
 URLResult
 );
+ 
 },
  
 onFailure: function (
@@ -139,8 +258,10 @@ error
 ) {
  
 console.log(error);
+ 
 }
 });
+ 
 },
  
 tableData: function (
@@ -151,7 +272,10 @@ var urlWAF =
 serviceURL +
 "/resources/v1/modeler/tasks";
  
-console.log(urlWAF);
+console.log(
+"Tasks URL:",
+urlWAF
+);
  
 WAFData.proxifiedRequest(
 urlWAF,
@@ -180,29 +304,33 @@ element
 tasks.push({
  
 title:
-element
-.dataelements
-.title,
+element.dataelements.title,
  
 state:
-element
-.dataelements
-.state,
+element.dataelements.state,
  
 policy:
-element
-.dataelements
-.policy
+element.dataelements.policy
+ 
 });
+ 
 }
 );
+ 
 }
  
-myWidget.dataFull = tasks;
+myWidget.dataFull =
+tasks;
+ 
+console.log(
+"dataFull",
+myWidget.dataFull
+);
  
 myWidget.displayData(
 myWidget.dataFull
 );
+ 
 },
  
 onFailure: function (
@@ -218,130 +346,14 @@ null,
 2
 ) +
 "</pre>";
-}
-}
-);
-},
  
-getAISuggestion: function (
-taskData
-) {
- 
-var responseDiv =
-widget.body.querySelector(
-"#aiResponse"
-);
- 
-responseDiv.innerHTML =
-"<b>Getting AI suggestion...</b>";
- 
-var prompt =
-myWidget.buildPrompt(
-taskData
-);
- 
-/*
-* AnythingLLM /query payload
-*/
-var payload = {
- 
-query: prompt
- 
-};
- 
-console.log(
-"AnythingLLM Request:",
-payload
-);
- 
-WAFData.authenticatedRequest(
-myWidget.config
-.anythingLLMUrl,
-{
- 
-method: "POST",
- 
-headers: {
- 
-"Content-Type":
-"application/json",
- 
-"Authorization":
-"Bearer " +
-myWidget.config
-.apiKey
-},
- 
-data: JSON.stringify(
-payload
-),
- 
-onComplete: function (
-response
-) {
- 
-console.log(
-"AnythingLLM Response:",
-response
-);
- 
-var answer = "";
- 
-if (
-response &&
-response.textResponse
-) {
- 
-answer =
-response.textResponse;
- 
-} else if (
-response &&
-response.response
-) {
- 
-answer =
-response.response;
- 
-} else {
- 
-answer =
-JSON.stringify(
-response,
-null,
-2
-);
 }
  
-responseDiv.innerHTML =
-"<h3>IP Classification Recommendation</h3>" +
-"<pre style='white-space:pre-wrap;'>" +
-answer +
-"</pre>";
-},
- 
-onFailure: function (
-error
-) {
- 
-console.error(
-error
-);
- 
-responseDiv.innerHTML =
-"<span style='color:red'>" +
-"AnythingLLM API Call Failed" +
-"</span><br><pre>" +
-JSON.stringify(
-error,
-null,
-2
-) +
-"</pre>";
-}
 }
 );
+ 
 }
+ 
 };
  
 widget.addEvent(
@@ -353,6 +365,8 @@ widget.addEvent(
 "onRefresh",
 myWidget.onLoadWidget
 );
+ 
 }
 );
+ 
 }
