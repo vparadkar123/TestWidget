@@ -10,7 +10,7 @@ function executeWidgetCode() {
 
             displayData: function(arrData) {
                 var tableHTML =
-                    "<div style='height:100%;overflow:auto;'><table><thead><tr><th>Title</th><th>State</th><th>Policy</th><tbody>";
+                    "<div style='height:100%;overflow:auto;'><table><thead><tr><th>Title New </th><th>State</th><th>Policy</th><tbody>";
 
                 for (var i = 0; i < arrData.length; i++) {
                     tableHTML =
