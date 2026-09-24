@@ -5,6 +5,10 @@ function executeWidgetCode(){
 require(["DS/WAFData/WAFData","DS/i3DXCompassServices/i3DXCompassServices"],function(WAFData,i3DXCompassServices){
 
 var myWidget={
+ console.log(
+"SecurityContext",
+widget.getValue("SecurityContext")
+);
  dataFull:[],
 
  displayData:function(arrData){
@@ -76,6 +80,10 @@ var myWidget={
   WAFData.proxifiedRequest(urlWAF,{
    proxy:'passport',
    type:'json',
+   headers:{
+SecurityContext:
+widget.getValue('SecurityContext')
+},
    onComplete:function(dataResp){
 
     var parts=[];
