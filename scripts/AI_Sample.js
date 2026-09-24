@@ -4,7 +4,7 @@ require(["DS/WAFData/WAFData","DS/i3DXCompassServices/i3DXCompassServices"],func
 
 var myWidget={
 
-GEMINI_API_KEY:"AQ.Ab8RN6JjoWU-3cfhDt0jKiaWS23_o7FDPEUR0S6RORNE9zqvhw",
+GEMINI_API_KEY:"",
 dataFull:[],
 
 renderTable:function(arrData){
